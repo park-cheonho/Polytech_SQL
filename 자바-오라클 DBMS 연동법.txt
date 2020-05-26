@@ -1,0 +1,71 @@
+자바에서 연동을 원하는 프로젝트 우클릭
+그리고 properties -> Java Build Path -> Add External JARs
+누른 후 ojdbc8.jar가 있는 곳을 찾아 갑니다.
+
+아마도 님들이 다른 거 먼저 깔았으면 ojdbc8.jar는 
+C:\Oracle폴더에 있을 테니 그거 불러와도 무관합니다.
+-> Apply and Close
+
+이후 아무 클래스파일이나 만듭니다.
+
+
+package javawork;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class jdbc{
+	
+		public static void main(String[] args) {
+
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		
+		String driver = "oracle.jdbc.driver.OracleDriver";
+		String url = "jdbc:oracle:thin:@172.16.88.120:1521:dink";
+		String uid = "ID"; // <--- 자신의 아이디
+		String upw = "PW"; <--- 자신의 패스워드
+		String query = "select ENAME, JOB from emp";
+		
+		try {
+			Class.forName(driver);
+		
+			connection = DriverManager.getConnection(url, uid, upw);
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			while (resultSet.next()) {
+				String id = resultSet.getString("ENAME");
+				String pw = resultSet.getString("JOB");
+				System.out.println(id + " : " + pw);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		} finally {
+			if (resultSet != null)
+			try {				
+				resultSet.close();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
+			if (statement != null)
+			try {
+				statement.close();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
+			if (connection != null)
+			try {
+				connection.close();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+}
